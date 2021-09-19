@@ -10,7 +10,7 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/ophub/amlogic-s9xxx-openwrt
+  REPO_URL: https://github.com/radityabh/amlogic-s9xxx-openwrt
   REPO_BRANCH: main
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -60,8 +60,8 @@ jobs:
         cd $OPENWRTROOT
         [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
         wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt-2021.09.18/helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
-        sudo chmod +x make
-        sudo ./make -d -b s905x3_s905x -k 5.10.66_5.4.147
+        sudo chmod +x makeHelmi
+        sudo ./makeHelmi -d -b s905x3_s905x -k 5.13.14_5.4.147 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
         echo "::set-output name=status::success"
@@ -89,7 +89,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: HelmiOs_s9xxx_${{ env.PACKAGED_OUTPUTDATE }}
+        tag_name: Helmi_s9xxx_${{ env.PACKAGED_OUTPUTDATE }}
         files: ${{ env.PACKAGED_OUTPUTPATH }}/*
         body: |
           This is Openwrt HelmiOs for Amlogic S9xxx STB
