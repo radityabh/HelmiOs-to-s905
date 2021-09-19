@@ -43,12 +43,16 @@ jobs:
       run: |
         df -hT $PWD
         git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        
+    - name: Install Feeds
+      id: feeds
+      run: |
+        cd openwrt
+        echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
         
     - name: Build OpenWrt firmware
       id: build
       run: |
-        cd amlogic-s9xxx-openwrt
         [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
         wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt-2021.09.18/helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
         sudo chmod +x make
