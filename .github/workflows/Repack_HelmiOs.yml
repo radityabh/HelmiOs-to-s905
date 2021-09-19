@@ -10,14 +10,9 @@ on:
         default: 'false'
 
 env:
-  UPLOAD_BIN_DIR: false
-  UPLOAD_ARMVIRT: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
-  UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
-  DELETE_RELEASE: true
-  DELETE_ARTIFACTS: true
   RECENT_LASTEST: 3
   TZ: Asia/Jakarta
 
@@ -53,7 +48,7 @@ jobs:
     - name: Build OpenWrt firmware
       id: build
       run: |
-        cd openwrt
+        cd amlogic-s9xxx-openwrt
         [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
         wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt-2021.09.18/helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
         sudo chmod +x make
