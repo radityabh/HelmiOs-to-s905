@@ -44,12 +44,6 @@ jobs:
         df -hT $PWD
         git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git openwrt
         
-    - name: Install Feeds
-      id: feeds
-      run: |
-        cd openwrt
-        echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
-        
     - name: Build OpenWrt firmware
       id: build
       run: |
