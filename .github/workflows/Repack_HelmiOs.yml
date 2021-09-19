@@ -53,6 +53,7 @@ jobs:
     - name: Build OpenWrt firmware
       id: build
       run: |
+        cd openwrt
         [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
         wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt-2021.09.18/helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
         sudo chmod +x make
