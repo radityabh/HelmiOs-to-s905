@@ -1,0 +1,94 @@
+name: Repack Helmi OS
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+
+env:
+  UPLOAD_BIN_DIR: false
+  UPLOAD_ARMVIRT: false
+  UPLOAD_FIRMWARE: false
+  UPLOAD_RELEASE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  DELETE_RELEASE: true
+  DELETE_ARTIFACTS: true
+  RECENT_LASTEST: 3
+  TZ: Asia/Jakarta
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install $(curl -fsSL git.io/ubuntu-2004-openwrt)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        echo "COMPILE_STARTINGTIME=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
+    - name: Clone source code
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        
+    - name: Build OpenWrt firmware
+      id: build
+      run: |
+        [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
+        wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt-2021.09.18/helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
+        sudo chmod +x make
+        sudo ./make -d -b s905x3_s905x -k 5.10.66_5.4.147
+        echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
+        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
+        echo "::set-output name=status::success"
+    - name: Upload artifact to Actions
+      uses: kittaakos/upload-artifact-as-is@master
+      if: steps.build.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      with:
+        path: ${{ env.PACKAGED_OUTPUTPATH }}/
+
+    - name: Upload OpenWrt Firmware to cowtransfer
+      if: steps.build.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ${{ env.PACKAGED_OUTPUTPATH }}/{openwrt_s9xxx_*,openwrt_n1_*} 2>&1 | tee cowtransfer.log
+        echo "COW_URL=$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV
+    - name: Upload OpenWrt Firmware to WeTransfer
+      if: steps.build.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ${{ env.PACKAGED_OUTPUTPATH }}/{openwrt_s9xxx_*,openwrt_n1_*} 2>&1 | tee wetransfer.log
+        echo "WET_URL=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV
+    - name: Upload OpenWrt Firmware to Release
+      uses: softprops/action-gh-release@v1
+      if: steps.build.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: HelmiOs_s9xxx_${{ env.PACKAGED_OUTPUTDATE }}
+        files: ${{ env.PACKAGED_OUTPUTPATH }}/*
+        body: |
+          This is Openwrt HelmiOs for Amlogic S9xxx STB
+          * Firmware information
+          Default IP: 192.168.1.1
+          Default username: root
+          Default password: password
