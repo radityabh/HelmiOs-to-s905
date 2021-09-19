@@ -42,7 +42,7 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git
+        git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git openwrt
         
     - name: Install Feeds
       id: feeds
