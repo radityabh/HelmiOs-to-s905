@@ -59,7 +59,7 @@ jobs:
       run: |
         cd $OPENWRTROOT
         [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
-        wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt-2021.09.18/helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
+        wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/latest/download/helmiwrt-bcm27xx-bcm2710-rpi-3-ext4-sysupgrade.img.gz
         sudo chmod +x makeHelmi
         sudo ./makeHelmi -d -b s905x3_s905x -k 5.13.14_5.4.147 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
