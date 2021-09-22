@@ -1,13 +1,20 @@
-name: Repack Helmi OS
+#=================================================
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+# Lisence: MIT
+# Author: P3TERX
+# Blog: https://p3terx.com
+# HelmiWrt by helmiau.com   
+#=================================================
+
+name: Repack HelmiWrt OS for s905x
 
 on:
-  repository_dispatch:
   workflow_dispatch:
-    inputs:
-      ssh:
-        description: 'SSH connection to Actions'
-        required: false
-        default: 'false'
+  schedule:
+    - cron: 59 23 * * *
+#  watch:
+#    types: started
 
 env:
   REPO_URL: https://github.com/radityabh/amlogic-s9xxx-openwrt
@@ -56,7 +63,7 @@ jobs:
         cd openwrt
         echo "OPENWRTROOT=$PWD" >> $GITHUB_ENV
         
-    - name: Build OpenWrt firmware
+    - name: Repacking HelmiWrt firmware
       id: build
       run: |
         cd $OPENWRTROOT
@@ -77,14 +84,28 @@ jobs:
         sudo chmod +x makeHelmi
         sudo ./makeHelmi -d -b s905x3_s905x -k 5.13.14_5.4.147 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
-        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
+        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d)" >> $GITHUB_ENV
+        find . -type f -name '$HELMIWRT_FILENAME' -exec rm "{}" \;
         echo "::set-output name=status::success"
 
-    - name: Upload artifact to Actions
-      uses: kittaakos/upload-artifact-as-is@master
-      if: steps.build.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+    - name: Delete Older Releases and Tags
+      uses: dev-drprasad/delete-older-releases@v0.2.0
+      if: steps.generate.outputs.GENERATE_STATUS == 'success' && steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        path: ${{ env.PACKAGED_OUTPUTPATH }}/
+        keep_latest: 10
+        delete_tags: true
+        delete_tag_pattern: helmiwrt
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Generate New Release Tag
+      id: tag
+      if: steps.generate.outputs.GENERATE_STATUS == 'success' && steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        sleep 20
+        echo "::set-output name=release_tag::helmiwrt-${{ env.FILE_DATE }}"
+        touch release.txt
+        echo "::set-output name=status::success"
 
     - name: Upload OpenWrt Firmware to Release
       uses: softprops/action-gh-release@v1
@@ -92,7 +113,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: helmiwrt-s9xxx_${{ env.PACKAGED_OUTPUTDATE }}
+        tag_name: helmiwrt-s905x_${{ env.PACKAGED_OUTPUTDATE }}
         files: ${{ env.PACKAGED_OUTPUTPATH }}/*
         body: |
           This is HelmiWrt OS Repacked for Amlogic S9xxx STB
