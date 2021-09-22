@@ -81,7 +81,7 @@ jobs:
         sudo chmod +x makeHelmi
         sudo ./makeHelmi -d -b s905x3_s905x -k 5.13.14_5.4.147 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
-        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d)" >> $GITHUB_ENV
+        echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
         find . -type f -name '$HELMIWRT_FILENAME' -exec rm "{}" \;
         echo "::set-output name=status::success"
 
