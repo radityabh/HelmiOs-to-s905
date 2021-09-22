@@ -87,7 +87,6 @@ jobs:
 
     - name: Delete Older Releases and Tags
       uses: dev-drprasad/delete-older-releases@v0.2.0
-      id: old
       if: steps.build.outputs.status == 'success' && !cancelled()
       with:
         keep_latest: 10
@@ -98,7 +97,6 @@ jobs:
 
     - name: Generate New Release Tag
       id: tag
-      if: steps.old.outputs.status == 'success' && !cancelled()
       run: |
         sleep 20
         echo "::set-output name=release_tag::helmiwrt-${{ env.PACKAGED_OUTPUTDATE }}"
