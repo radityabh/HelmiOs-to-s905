@@ -45,13 +45,14 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-        echo "COMPILE_STARTINGTIME=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
+        echo "COMPILE_STARTINGTIME=$(date +"%Y.%m.%d.%H:%M")" >> $GITHUB_ENV
         
     - name: Clone source code
       working-directory: /workdir
       run: |
         df -hT $PWD
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        sed -i 's/HelmiWrt/helmiwrt/g; s/\%d.\%H\%M/\%d/g' openwrt/makeHelmi
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         
     - name: Install Feeds
@@ -113,7 +114,7 @@ jobs:
         tag_name: helmiwrt-s905x_${{ env.PACKAGED_OUTPUTDATE }}
         files: ${{ env.PACKAGED_OUTPUTPATH }}/*
         body: |
-          This is HelmiWrt OS Repacked for Amlogic S9xxx STB
+          HelmiWrt OS Repacked for Amlogic S9xxx STB
           
           * Firmware information
           Default IP: 192.168.1.1
