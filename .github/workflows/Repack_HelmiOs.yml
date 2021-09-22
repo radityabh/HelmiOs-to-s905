@@ -52,7 +52,7 @@ jobs:
       run: |
         df -hT $PWD
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        sed -i 's/HelmiWrt/helmiwrt/g; s/\%d.\%H\%M/\%d/g' openwrt/makeHelmi
+        sed -i '/HelmiWrt_/c\ build_image_file="${out_path}/helmiwrt-\${build_op}-k\${kernel}.img"' openwrt/makeHelmi
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         
     - name: Install Feeds
@@ -68,16 +68,20 @@ jobs:
         [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
         if wget -S --spider $HELMIWRT_REL-$(date +"%Y.%m.%d")/$HELMIWRT_FILENAME 2>&1 | grep -q 'HTTP/1.1 200 OK'; then
             #Today Build
-            wget -P openwrt-armvirt $HELMIWRT_REL-$(date +"%Y.%m.%d")/$HELMIWRT_FILENAME
+            echo "Today build found ! Using this build for repack."
+            wget -P --show-progress openwrt-armvirt $HELMIWRT_REL-$(date +"%Y.%m.%d")/$HELMIWRT_FILENAME
         elif wget -S --spider $HELMIWRT_REL-$(date +%Y.%m.%d -d "1 day ago")/$HELMIWRT_FILENAME 2>&1 | grep -q 'HTTP/1.1 200 OK'; then
             #Yesterday
-            wget -P openwrt-armvirt $HELMIWRT_REL-$(date +%Y.%m.%d -d "1 day ago")/$HELMIWRT_FILENAME
+            echo "Yesterday build found ! Using this build for repack."
+            wget -P --show-progress openwrt-armvirt $HELMIWRT_REL-$(date +%Y.%m.%d -d "1 day ago")/$HELMIWRT_FILENAME
         elif wget -S --spider $HELMIWRT_REL-$(date +%Y.%m.%d -d "2 day ago")/$HELMIWRT_FILENAME 2>&1 | grep -q 'HTTP/1.1 200 OK'; then
             #Before Yesterday
-            wget -P openwrt-armvirt $HELMIWRT_REL-$(date +%Y.%m.%d -d "2 day ago")/$HELMIWRT_FILENAME
+            echo "2 days ago build found ! Using this build for repack."
+            wget -P --show-progress openwrt-armvirt $HELMIWRT_REL-$(date +%Y.%m.%d -d "2 day ago")/$HELMIWRT_FILENAME
         elif wget -S --spider $HELMIWRT_REL-$(date +%Y.%m.%d -d "3 day ago")/$HELMIWRT_FILENAME 2>&1 | grep -q 'HTTP/1.1 200 OK'; then
             #2 Days Before Yesterday
-            wget -P openwrt-armvirt $HELMIWRT_REL-$(date +%Y.%m.%d -d "3 day ago")/$HELMIWRT_FILENAME
+            echo "3 days ago build found ! Using this build for repack."
+            wget -P --show-progress openwrt-armvirt $HELMIWRT_REL-$(date +%Y.%m.%d -d "3 day ago")/$HELMIWRT_FILENAME
         fi
         sudo chmod +x makeHelmi
         sudo ./makeHelmi -d -b s905x3_s905x -k 5.13.14_5.4.147 -a false
