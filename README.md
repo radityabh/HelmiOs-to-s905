@@ -8,10 +8,11 @@
 ### Official Site :
 > Read more about firmware information, such as features, login informations, etc.
 
-<https://helmiau.com/helmiwrt-os>
+<https://helmiau.com/blog/helmiwrt-os>
 
 ### Credits
 - https://github.com/helmiau/HelmiWrt-OS
 - https://github.com/ophub/amlogic-s9xxx-openwrt
 - https://www.facebook.com/sibondt
+- https://github.com/radityabh/HelmiOs-to-s905
 - https://www.facebook.com/helmiau
