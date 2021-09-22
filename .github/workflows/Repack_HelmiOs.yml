@@ -1,10 +1,9 @@
 #=================================================
 # https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
+# Description: Repack HelmiWrt OS for s905x devices using GitHub Actions
 # Lisence: MIT
-# Author: P3TERX
-# Blog: https://p3terx.com
-# HelmiWrt by helmiau.com   
+# Repacker : Raditya Budi Handoko <https://github.com/radityabh>
+# HelmiWrt OS by helmiau.com   
 #=================================================
 
 name: Repack HelmiWrt OS for s905x
@@ -21,9 +20,7 @@ env:
   REPO_BRANCH: main
   HELMIWRT_REL: https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt
   HELMIWRT_FILENAME: helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
-  UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
-  UPLOAD_WETRANSFER: false
   RECENT_LASTEST: 3
   TZ: Asia/Jakarta
 
@@ -90,7 +87,8 @@ jobs:
 
     - name: Delete Older Releases and Tags
       uses: dev-drprasad/delete-older-releases@v0.2.0
-      if: steps.generate.outputs.GENERATE_STATUS == 'success' && steps.organize.outputs.status == 'success' && !cancelled()
+      id: old
+      if: steps.build.outputs.status == 'success' && !cancelled()
       with:
         keep_latest: 10
         delete_tags: true
@@ -100,16 +98,17 @@ jobs:
 
     - name: Generate New Release Tag
       id: tag
-      if: steps.generate.outputs.GENERATE_STATUS == 'success' && steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.old.outputs.status == 'success' && !cancelled()
       run: |
         sleep 20
-        echo "::set-output name=release_tag::helmiwrt-${{ env.FILE_DATE }}"
+        echo "::set-output name=release_tag::helmiwrt-${{ env.PACKAGED_OUTPUTDATE }}"
         touch release.txt
         echo "::set-output name=status::success"
 
     - name: Upload OpenWrt Firmware to Release
+      id: upload
       uses: softprops/action-gh-release@v1
-      if: steps.build.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
