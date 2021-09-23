@@ -1,18 +1,18 @@
-# HelmiWRT-for-s905
+### HelmiWrt OS Repack for s905x devices
 
-<html>
-<body>
-<!--StartFragment-->
+| Chipset | Device Lists |
+| :--: | :--: |
+| s905x | HG680P, B860H |
+| s905x3 | X96-Max+, HK1-Box,<br> H96-Max-X3, Ugoos-X3, <br>X96-Air, A95XF3-Air |
 
-s905x3 |X96-Max+, HK1-Box, H96-Max-X3, Ugoos-X3, X96-Air, A95XF3-Air
--- | -- |
-s905x | HG680P, B860H
+### Official Site :
+> Read more about firmware information, such as features, login informations, etc.
 
-<!--EndFragment-->
-</body>
-</html>
+<https://helmiau.com/blog/helmiwrt-os>
 
-Credit
+### Credits
 - https://github.com/helmiau/HelmiWrt-OS
 - https://github.com/ophub/amlogic-s9xxx-openwrt
 - https://www.facebook.com/sibondt
+- https://github.com/radityabh/HelmiOs-to-s905
+- https://www.facebook.com/helmiau
