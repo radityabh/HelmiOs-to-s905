@@ -25,7 +25,7 @@ env:
   TZ: Asia/Jakarta
 
 jobs:
-  build:
+  Build:
     runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
 
@@ -82,9 +82,13 @@ jobs:
             #2 Days Before Yesterday
             echo "3 days ago build found ! Using this build for repack."
             wget -q --show-progress -P openwrt-armvirt $HELMIWRT_REL-$(date +%Y.%m.%d -d "3 day ago")/$HELMIWRT_FILENAME
+        else
+            #Download latest build
+            echo "3 days ago build not found ! Downloading latest rootfs build."
+            wget -q --show-progress -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/latest/download/$HELMIWRT_FILENAME
         fi
         sudo chmod +x makeHelmi
-        sudo ./makeHelmi -d -b s905x3_s905x -k 5.4.150_5.15.1 -a false
+        sudo ./makeHelmi -d -b s905x3_s905x2_s905x -k 5.4.150_5.15.1 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
         find . -type f -name '$HELMIWRT_FILENAME' -exec rm "{}" \;
@@ -115,17 +119,23 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        name: HelmiWrt ${{ env.PACKAGED_OUTPUTDATE }}
         tag_name: helmiwrt-s905x_${{ env.PACKAGED_OUTPUTDATE }}
-        files: ${{ env.PACKAGED_OUTPUTPATH }}/*
+        files: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-s905x*
         body: |
-          HelmiWrt OS Repacked for Amlogic S9xxx STB
+          **HelmiWrt is custom OpenWrt build for**
+          Set-top-box s950x/s905x2/s905x3 chipset
           
-          * Firmware information
-          Default IP: 192.168.1.1
-          Default username: root
-          Default password: password
-          
-          [Read more about this firmware and guides here](https://www.helmiau.com/blog/helmiwrt-os)
+          **Firmware Information**
+          LuCI IP Address   : 192.168.1.1
+          LuCI Username     : root
+          LuCI Password     : password
+          WiFi SSID         : HelmiWrt
+          WiFi Password     : none
+            
+          **[Donation here](https://www.helmiau.com/pay/index_en.html)**
+            
+          **[Read more about firmware info and guides here](https://www.helmiau.com/blog/helmiwrt-os)**
 
     - name: Delete Workflow Runs
       uses: GitRML/delete-workflow-runs@main
