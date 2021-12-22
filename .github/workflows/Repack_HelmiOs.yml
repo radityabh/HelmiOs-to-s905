@@ -118,7 +118,7 @@ jobs:
       if: steps.build.outputs.status == 'success' && !cancelled()
       with:
         allowUpdates: true
-        token: ${{ secrets.HELMIWRT_RW }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         name: HelmiWrt ${{ env.BUILD_TAG }}
         tag: helmiwrt-${{ env.BUILD_TAG }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-s9*
