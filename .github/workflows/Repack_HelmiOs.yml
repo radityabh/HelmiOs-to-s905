@@ -6,7 +6,7 @@
 # HelmiWrt OS by helmiau.com   
 #=================================================
 
-name: Repack HelmiWrt OS for s905x
+name: Build s9xxx
 
 on:
   workflow_dispatch:
@@ -21,7 +21,6 @@ env:
   HELMIWRT_REL: https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt
   HELMIWRT_FILENAME: helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
   UPLOAD_RELEASE: true
-  RECENT_LASTEST: 3
   TZ: Asia/Jakarta
 
 jobs:
@@ -108,57 +107,24 @@ jobs:
             echo "BUILD_TAG=$(date +%Y.%m.%d -d '7 day ago')" >> $GITHUB_ENV
         fi
         sudo chmod +x makeHelmi
-        sudo ./makeHelmi -d -b s905x3_s905x2_s905x_s905w_s905d_s922x_s912 -k 5.4.150_5.15.5 -a false
+        sudo ./makeHelmi -d -b s905x3_s905x2_s905x_s905w_s905d_s922x_s912 -k 5.4.167_5.15.5 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
         find . -type f -name '$HELMIWRT_FILENAME' -exec rm "{}" \;
         echo "::set-output name=status::success"
 
-    - name: Delete Older Releases and Tags
-      uses: dev-drprasad/delete-older-releases@v0.2.0
+    - name: Upload Firmware Files to GitHub Release
+      uses: ncipollo/release-action@v1
       if: steps.build.outputs.status == 'success' && !cancelled()
       with:
-        keep_latest: 10
-        delete_tags: true
-        delete_tag_pattern: helmiwrt
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Generate New Release Tag
-      id: tag
-      run: |
-        sleep 20
-        echo "::set-output name=release_tag::helmiwrt-${{ env.PACKAGED_OUTPUTDATE }}"
-        touch release.txt
-        echo "::set-output name=status::success"
-
-    - name: Upload HelmiWrt Firmware to Release
-      id: upload
-      uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
         name: HelmiWrt ${{ env.BUILD_TAG }}
-        tag_name: helmiwrt-${{ env.BUILD_TAG }}
-        files: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-s*
-        body: |
-          **HelmiWrt is custom OpenWrt build for**
-          Set-top-box s9xxx chipset
-          
-          **Firmware Information**
-          LuCI IP Address   : 192.168.1.1
-          LuCI Username     : root
-          LuCI Password     : password
-          WiFi SSID         : HelmiWrt
-          WiFi Password     : none
-            
-          **[Donation here](https://www.helmiau.com/pay/index_en.html)**
-            
-          **[Read more about firmware info and guides here](https://www.helmiau.com/blog/helmiwrt-os)**
+        tag: helmiwrt-${{ env.BUILD_TAG }}
+        artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-s9*
 
     - name: Delete Workflow Runs
       uses: GitRML/delete-workflow-runs@main
       with:
-        retain_days: 1
+        retain_days: 2
         keep_minimum_runs: 3
