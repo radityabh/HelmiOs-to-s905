@@ -107,7 +107,7 @@ jobs:
             echo "BUILD_TAG=$(date +%Y.%m.%d -d '7 day ago')" >> $GITHUB_ENV
         fi
         sudo chmod +x makeHelmi
-        sudo ./makeHelmi -d -b s905x3_s905x2_s905x_s905w_s905d_s922x_s912 -k 5.4.0_5.15.5 -a false
+        sudo ./makeHelmi -d -b s905x3_s905x2_s905x_s905w_s905d_s922x_s912 -k 5.4.0_5.15.15 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
         find . -type f -name '$HELMIWRT_FILENAME' -exec rm "{}" \;
