@@ -105,8 +105,8 @@ jobs:
       with:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
-        name: HelmiWrt ${{ env.BUILD_TAG }}
-        tag: helmiwrt-${{ env.BUILD_TAG }}
+        name: HelmiWrt OS ${{ env.BUILD_DATE }}
+        tag: helmiwrt-${{ env.BUILD_DATE }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-*
         body: |
           **HelmiWrt is custom OpenWrt build for**
@@ -194,8 +194,8 @@ jobs:
       with:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
-        name: HelmiWrt ${{ env.BUILD_TAG }}
-        tag: helmiwrt-${{ env.BUILD_TAG }}
+        name: HelmiWrt OS ${{ env.BUILD_DATE }}
+        tag: helmiwrt-${{ env.BUILD_DATE }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-*
         body: |
           **HelmiWrt is custom OpenWrt build for**
