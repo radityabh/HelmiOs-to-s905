@@ -18,7 +18,7 @@ on:
 env:
   REPO_URL: https://github.com/radityabh/amlogic-s9xxx-openwrt
   REPO_BRANCH: main
-  PROC_LISTS: s905x3_s905x2_s905x_s905w_s905d_s922x_s912
+  PROC_LISTS: s905x
   KERNEL_VR: 5.15.15
   UPLOAD_RELEASE: true
   TZ: Asia/Jakarta
@@ -108,7 +108,7 @@ jobs:
         replacesArtifacts: true
         repo: dl
         name: HelmiWrt OS ${{ env.BUILD_DATE }}
-        token: ${{ secrets.HELMIWRT_RW }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         tag: helmiwrt-${{ env.BUILD_DATE }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-*
         body: |
@@ -200,7 +200,7 @@ jobs:
         replacesArtifacts: true
         repo: dl
         name: HelmiWrt OS ${{ env.BUILD_DATE }}
-        token: ${{ secrets.HELMIWRT_RW }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         tag: helmiwrt-${{ env.BUILD_DATE }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-*
         body: |
