@@ -113,10 +113,6 @@ jobs:
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-*
         body: |
           **HelmiWrt is custom OpenWrt build for**
-          - Raspberry Pi 1,2,3,4
-          - x86/64 (PC)
-          - NanoPi R2C, R2S and R4S
-          - OrangePi R1 Plus, R1 Plus LTS
           - Set-top-box s9xxx chipset
           [Donation here](https://www.helmiau.com/pay/index_en.html) • [Read more firmware info and guides](https://www.google.com/search?q=helmi+wrt+os)
 
@@ -140,7 +136,7 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
         echo "COMPILE_STARTINGTIME=$(date +"%Y.%m.%d.%H:%M")" >> $GITHUB_ENV
-        export BUILD_DATE=$(curl -sL https://api.github.com/repos/helmiau/HelmiWrt-OS-Immortal/releases | jq -r 'first | .tag_name' | sed 's/helmiwrt-//g')
+        export BUILD_DATE=$(curl -sL https://api.github.com/repos/helmiau/HelmiWrt-OS-Immortal/releases | jq -r '.[1] | .tag_name' | sed 's/helmiwrt-//g')
         echo "BUILD_DATE=$BUILD_DATE" >> $GITHUB_ENV
         export HELMIWRT_REL="https://github.com/helmiau/HelmiWrt-OS-Immortal/releases/download/helmiwrt"
         echo "HELMIWRT_REL=$HELMIWRT_REL" >> $GITHUB_ENV
