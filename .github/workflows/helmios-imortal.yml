@@ -101,15 +101,12 @@ jobs:
 
     - name: Upload Firmware Files to GitHub Release
       uses: ncipollo/release-action@v1
-      if: steps.build.outputs.status == 'success' && steps.dlrelease.outputs.status == 'success' && !cancelled()
+      if: steps.build.outputs.status == 'success' && !cancelled()
       with:
-        prerelease: true
         allowUpdates: true
-        replacesArtifacts: true
-        repo: dl
-        name: HelmiWrt OS ${{ env.BUILD_DATE }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag: helmiwrt-${{ env.BUILD_DATE }}
+        name: HelmiWrt ${{ env.BUILD_TAG }}
+        tag: helmiwrt-${{ env.BUILD_TAG }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-*
         body: |
           **HelmiWrt is custom OpenWrt build for**
@@ -193,15 +190,12 @@ jobs:
 
     - name: Upload Firmware Files to GitHub Release
       uses: ncipollo/release-action@v1
-      if: steps.build.outputs.status == 'success' && steps.dlrelease.outputs.status == 'success' && !cancelled()
+      if: steps.build.outputs.status == 'success' && !cancelled()
       with:
-        prerelease: true
         allowUpdates: true
-        replacesArtifacts: true
-        repo: dl
-        name: HelmiWrt OS ${{ env.BUILD_DATE }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        tag: helmiwrt-${{ env.BUILD_DATE }}
+        name: HelmiWrt ${{ env.BUILD_TAG }}
+        tag: helmiwrt-${{ env.BUILD_TAG }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/helmiwrt-*
         body: |
           **HelmiWrt is custom OpenWrt build for**
