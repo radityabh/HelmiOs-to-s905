@@ -10,7 +10,7 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/radityabh/Amlogic-Openwrt
+  REPO_URL: https://github.com/radityabh/Amlogic-Openwrt.git
   REPO_BRANCH: main
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
