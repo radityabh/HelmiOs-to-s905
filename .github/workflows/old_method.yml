@@ -10,7 +10,7 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/radityabh/amlogic-s9xxx-openwrt
+  REPO_URL: https://github.com/radityabh/Amlogic-Openwrt
   REPO_BRANCH: main
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -20,7 +20,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
@@ -33,7 +33,7 @@ jobs:
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(curl -fsSL git.io/ubuntu-2004-openwrt)
+        sudo -E apt-get -qq install -y $(curl -fsSL https://is.gd/depend_ubuntu2204_openwrt)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
@@ -59,9 +59,9 @@ jobs:
       run: |
         cd $OPENWRTROOT
         [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
-        wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS/releases/download/helmiwrt-2021.09.18/helmiwrt-bcm27xx-bcm2710-rpi-3-rootfs.tar.gz
+        wget -P openwrt-armvirt https://github.com/helmiau/HelmiWrt-OS-Immortal/releases/download/helmiwrt-2023.03.17/helmiwrt-18.06-k5.4-armvirt-64-default-rootfs.tar.gz
         sudo chmod +x makeHelmi
-        sudo ./makeHelmi -d -b s905x3_s905x -k 5.13.14_5.4.147 -a false
+        sudo ./make -b s905x_s905x-b860h -k 5.9.16 -a false
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
         echo "::set-output name=status::success"
